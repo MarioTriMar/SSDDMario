@@ -25,13 +25,7 @@ Para escribir en un json:
     with open("tag_db.json", "r) as f:
         d = json.load(d)
 """
-"""
-1º Crear proxy catalog
-2º newMedia y removeMedia
-3º Uso de estructuras
-4º Pasar el autenticator al sirviente.
-5º Persistencia
-"""
+
 
 
 
