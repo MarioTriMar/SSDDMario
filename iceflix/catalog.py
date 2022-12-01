@@ -155,7 +155,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized == False:
-            raise iceflix.Unauthorized
+            raise IceFlix.Unauthorized
         """TODO"""
 
 
@@ -206,7 +206,7 @@ class Catalog(Ice.Application):
         
         '''Principal proxy'''
         proxyPrincipal = self.communicator().stringToProxy(argv[1])
-        principalPrx = iceflix.MainPrx.checkedCast(proxyPrincipal)
+        principalPrx = IceFlix.MainPrx.checkedCast(proxyPrincipal)
         if not principalPrx:
             raise RuntimeError('Invalid proxy')
         principalPrx.newService(proxy, proxy.ice_getIdentity().name)
