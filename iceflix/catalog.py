@@ -26,6 +26,13 @@ Para escribir en un json:
         d = json.load(d)
 """
 
+"""
+Tutoría
+Cuando me anuncio envio proxy o casteo?
+Preguntar por si el removeMedia debe lanzar excepcion
+Desarrollar flujo
+Preguntar por los parametros del resto de metodos del sirviente
+"""
 
 
 
@@ -59,7 +66,7 @@ def add_tags(mediaId, tags, userToken):
         dicAux={}
         dicAux[mediaId]=[tags]
         dic[userToken]=dicAux
-    save_json("media.json", dic)
+    save_json("mediaTags.json", dic)
 
 def remove_tags(mediaId, tags, userToken):
     dic={}
@@ -73,23 +80,21 @@ def remove_tags(mediaId, tags, userToken):
             listaTags=dic[userToken][mediaId]
             index=listaTags.index(tag)
             del dic[userToken][mediaId][index]
-            save_json("media.json", dic)
+            save_json("mediaTags.json", dic)
     
 
 class MediaCatalog(iceflix.MediaCatalog):
     def __init__(self):
         self.mediasFile={}
         self.mediasProvider={}
-        """Preguntar por estructuras *"""
-        self.mediaInfo = iceflix.MediaInfo()
-        self.media = iceflix.Media()
-        """Preguntar por como obtener el autenticator"""
         self.principal=None
 
     def newMedia(self, mediaId, provider, current=None):
         if mediaId not in self.mediasFile:
             self.mediasFile[mediaId] = mediaId
-            save_json("mediaFile.json", self.mediasFile)
+            dicAux = read_json("mediaFile.json")
+            dicAux[mediaId]=mediaId
+            save_json("mediaFile.json", dicAux)
         if mediaId in self.mediasProvider:
             self.mediasProvider.append(provider)
         if mediaId not in self.mediasProvider:
@@ -115,16 +120,35 @@ class MediaCatalog(iceflix.MediaCatalog):
         admin = authenticator.isAdmin(adminToken)
         if admin == False:
             raise iceflix.Unauthorized
-        else:
+        
+        if mediaId in self.mediasFile:
             self.mediasFile[mediaId]=name
             save_json("mediaFile.json", self.mediasFile)
+        else:
+            raise iceflix.WrongMediaId()
             
     def getTile(self, mediaId, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized == False:
             raise iceflix.Unauthorized
-        """TODO"""
+        dicName=read_json("mediaFile.json")
+        if mediaId not in dicName:
+            raise iceflix.WrongMediaId
+        listProviders=self.mediasProvider[mediaId]
+        if listProviders:
+            provider=listProviders[0]
+        else:
+            raise iceflix.TemporaryUnavailable
+        
+        
+        dicTags=read_json("mediaTags.json")
+        name=dicName[mediaId]
+        tags=dicTags[userToken][mediaId]
+        mediaInfo=iceflix.MediaInfo(name, tags)
+        media=iceflix.Media(mediaId, provider, mediaInfo)
+        return media
+        
     def getTilesByName(self, name, exact, current=None):
         """TODO"""
     def getTilesByTags(self, tags, includeAllTags, userToken, current=None):
