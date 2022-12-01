@@ -222,4 +222,7 @@ class Catalog(Ice.Application):
 
 if __name__ == '__main__':
     catalog=Catalog()
-    sys.exit(catalog.main(sys.argv))
+    if sys.argv != 2:
+        print("Para lanzar ./catalog.py <mainProxy>")
+    else:
+        sys.exit(catalog.main(sys.argv))
