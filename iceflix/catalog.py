@@ -9,8 +9,8 @@ Threading -> libreria para paralelismo.
 Manejo del announce cada 25 segundos
 '''
 import threading
-Ice.loadSlice('iceflix.ice')
-import iceflix
+Ice.loadSlice("iceflix.ice")
+import IceFlix
 
 """
 getAuthenticator devuelve un proxy casteado
@@ -83,7 +83,7 @@ def remove_tags(mediaId, tags, userToken):
             save_json("mediaTags.json", dic)
     
 
-class MediaCatalog(iceflix.MediaCatalog):
+class MediaCatalog(IceFlix.MediaCatalog):
     def __init__(self):
         self.mediasFile={}
         self.mediasProvider={}
@@ -111,7 +111,7 @@ class MediaCatalog(iceflix.MediaCatalog):
                 index=listProviders.index(provider)
                 del self.mediasProvider[mediaId][index]
         else:
-            raise iceflix.WrongMediaId()
+            raise IceFlix.WrongMediaId()
         """Preguntar si hay que lanzar excepcion"""
 
 
@@ -119,34 +119,34 @@ class MediaCatalog(iceflix.MediaCatalog):
         authenticator=self.principal.getAuthenticator()
         admin = authenticator.isAdmin(adminToken)
         if admin == False:
-            raise iceflix.Unauthorized
+            raise IceFlix.Unauthorized
         
         if mediaId in self.mediasFile:
             self.mediasFile[mediaId]=name
             save_json("mediaFile.json", self.mediasFile)
         else:
-            raise iceflix.WrongMediaId()
+            raise IceFlix.WrongMediaId()
             
     def getTile(self, mediaId, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized == False:
-            raise iceflix.Unauthorized
+            raise IceFlix.Unauthorized
         dicName=read_json("mediaFile.json")
         if mediaId not in dicName:
-            raise iceflix.WrongMediaId
+            raise IceFlix.WrongMediaId
         listProviders=self.mediasProvider[mediaId]
         if listProviders:
             provider=listProviders[0]
         else:
-            raise iceflix.TemporaryUnavailable
+            raise IceFlix.TemporaryUnavailable
         
         
         dicTags=read_json("mediaTags.json")
         name=dicName[mediaId]
         tags=dicTags[userToken][mediaId]
-        mediaInfo=iceflix.MediaInfo(name, tags)
-        media=iceflix.Media(mediaId, provider, mediaInfo)
+        mediaInfo=IceFlix.MediaInfo(name, tags)
+        media=IceFlix.Media(mediaId, provider, mediaInfo)
         return media
         
     def getTilesByName(self, name, exact, current=None):
@@ -163,11 +163,11 @@ class MediaCatalog(iceflix.MediaCatalog):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized == False:
-            raise iceflix.Unauthorized
+            raise IceFlix.Unauthorized
 
         dic=read_json("mediaFile.json")
         if mediaId not in dic:
-            raise iceflix.WrongMediaId
+            raise IceFlix.WrongMediaId
         add_tags(mediaId, tags, userToken)
 
 
@@ -176,10 +176,10 @@ class MediaCatalog(iceflix.MediaCatalog):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized == False:
-            raise iceflix.Unauthorized
+            raise IceFlix.Unauthorized
         dic=read_json("mediaFile.json")
         if mediaId not in dic:
-            raise iceflix.WrongMediaId
+            raise IceFlix.WrongMediaId
         remove_tags(mediaId, tags, userToken)
 
         
@@ -202,7 +202,7 @@ class Catalog(Ice.Application):
         adapter = broker.createObjectAdapterWithEndpoints("catalogAdapter", "tcp")
         proxy=adapter.addWithUUID(self.servant)
         adapter.activate()
-        
+        print(proxy)
         
         '''Principal proxy'''
         proxyPrincipal = self.communicator().stringToProxy(argv[1])
