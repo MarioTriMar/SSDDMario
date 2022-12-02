@@ -81,7 +81,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         self.mediasFile={}
         self.mediasProvider={}
         self.principal=None
-        self.mediasName=read_json("mediaFile.json")
+        self.mediasName=read_json("mediaName.json")
         self.mediasTags=read_json("mediaTags.json")
 
     def newMedia(self, mediaId, provider, current=None):
@@ -91,7 +91,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
             self.mediasProvider.append(provider)
         if mediaId not in self.mediasProvider:
             self.mediasProvider[mediaId]=[provider]
-        save_json("mediaFile.json", self.mediasName)
+        save_json("mediaName.json", self.mediasName)
           
     def removeMedia(self, mediaId, provider, current=None):
         if mediaId in self.mediasProvider:
@@ -109,7 +109,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
             self.mediasName[mediaId]=name
         else:
             raise IceFlix.WrongMediaId()
-        save_json("mediaFile.json", self.mediasFile)
+        save_json("mediaName.json", self.mediasName)
             
     def getTile(self, mediaId, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
