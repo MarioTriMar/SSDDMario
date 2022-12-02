@@ -28,10 +28,12 @@ Para escribir en un json:
 
 """
 Tutoría
-Cuando me anuncio envio proxy o casteo?
-Preguntar por si el removeMedia debe lanzar excepcion
-Desarrollar flujo
-Preguntar por los parametros del resto de metodos del sirviente
+- Cuando me anuncio envio proxy o casteo?
+- Preguntar por si el removeMedia debe lanzar excepcion
+- Preguntar por el rename si tengo que cambiar del json aunque no esté
+  la media en memoria
+- Preguntar por los parametros del resto de metodos del sirviente
+- Desarrollar flujo
 """
 
 
@@ -91,9 +93,12 @@ class MediaCatalog(IceFlix.MediaCatalog):
 
     def newMedia(self, mediaId, provider, current=None):
         if mediaId not in self.mediasFile:
-            self.mediasFile[mediaId] = mediaId
             dicAux = read_json("mediaFile.json")
-            dicAux[mediaId]=mediaId
+            if mediaId not in dicAux:
+                dicAux[mediaId]=mediaId
+                self.mediasFile[mediaId] = mediaId
+            else:
+                self.mediasFile[mediaId]=dicAux[mediaId]
             save_json("mediaFile.json", dicAux)
         if mediaId in self.mediasProvider:
             self.mediasProvider.append(provider)
@@ -120,12 +125,13 @@ class MediaCatalog(IceFlix.MediaCatalog):
         admin = authenticator.isAdmin(adminToken)
         if admin == False:
             raise IceFlix.Unauthorized
-        
+        dicAux=read_json("mediaFile.json")
         if mediaId in self.mediasFile:
             self.mediasFile[mediaId]=name
-            save_json("mediaFile.json", self.mediasFile)
+            dicAux[mediaId]=name
         else:
             raise IceFlix.WrongMediaId()
+        save_json("mediaFile.json", self.mediasFile)
             
     def getTile(self, mediaId, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
