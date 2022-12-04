@@ -29,7 +29,6 @@ def catalog_service():
     setup_logging()
     logging.info("Catalog service")
     catalog=Catalog()
-    catalog.main(sys.argv)
     sys.exit(catalog.main(sys.argv))
 
 
