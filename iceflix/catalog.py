@@ -207,7 +207,7 @@ class Catalog(Ice.Application):
         '''Announce Handler'''
         timer = threading.Timer(25,announce_catalog,[principalPrx,proxy,proxy.ice_getIdentity().name])
         timer.start()
-
+        
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
         return 1
