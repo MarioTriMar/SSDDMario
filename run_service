@@ -1,17 +1,4 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-import sys
-import time
-from os import system
-
-def main():
-    if len(sys.argv) != 2:
-        print("Para lanzar ./run_service <mainProxy>")
-    
-    system("gnome-terminal -- python3 ./iceflix/catalog.py "+ sys.argv[1])
-"""iceflix-catalog --Ice.Config=configs/catalog.config"""
-
-if __name__=="__main__":
-    main()
+#!/usr/bin/env bash
+# TODO: Remove the services you don't need
+iceflix-catalog --Ice.Config=configs/catalog.config
 

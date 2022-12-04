@@ -4,7 +4,7 @@ import logging
 import sys
 
 from iceflix.main import MainApp
-
+from catalog import *
 
 LOG_FORMAT = '%(asctime)s - %(levelname)-7s - %(module)s:%(funcName)s:%(lineno)d - %(message)s'
 
@@ -28,7 +28,9 @@ def catalog_service():
     """Handles the `catalogservice` CLI command."""
     setup_logging()
     logging.info("Catalog service")
-    return 0
+    catalog=Catalog()
+    catalog.main(sys.argv)
+    sys.exit(catalog.main(sys.argv))
 
 
 def file_service():
