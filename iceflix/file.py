@@ -4,7 +4,7 @@
 import Ice
 import sys
 
-Ice.loadSlice('iceflix.ice')
+Ice.loadSlice('iceflix/iceflix.ice')
 import IceFlix
 
 class FileService(IceFlix.FileService):
@@ -16,7 +16,7 @@ class file(Ice.Application):
     def __init__(self):
         self.servant=FileService()
     def run(self, argv):
-        proxy1=self.communicator().stringToProxy(argv[1])
+        proxy1 = self.communicator().propertyToProxy(argv[0])
         catalogPrx=IceFlix.MediaCatalogPrx.checkedCast(proxy1)
         if not catalogPrx:
             raise RuntimeError('Invalid proxy')
@@ -25,7 +25,7 @@ class file(Ice.Application):
         adapter=broker.createObjectAdapterWithEndpoints("fileAdapter","tcp")
         proxy=adapter.addWithUUID(self.servant)
         filePrx=IceFlix.FileServicePrx.checkedCast(proxy)
-        catalogPrx.removeMedia("2",filePrx)
+        catalogPrx.newMedia("112",filePrx)
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
         return 1

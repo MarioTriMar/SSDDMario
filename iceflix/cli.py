@@ -4,7 +4,7 @@ import logging
 import sys
 
 from iceflix.main import MainApp
-from catalog import *
+from iceflix.catalog import Catalog
 
 LOG_FORMAT = '%(asctime)s - %(levelname)-7s - %(module)s:%(funcName)s:%(lineno)d - %(message)s'
 

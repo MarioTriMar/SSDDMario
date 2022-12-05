@@ -1,7 +1,29 @@
 # Template project for ssdd-lab
 
-Enlace git:
+# ENLACE GITHUB
 https://github.com/MarioTriMar/SSDDMario
+
+
+# EJECUCIÓN SERVICIO CATÁLOGO
+Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
+
+1º Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
+el servicio obtendrá el proxy desde ahí.
+
+2º Ejecutar /run_service. 
+
+Una vez hecho esto el servicio lo primero que hará será anunciarse en el servidor principal y continuará haciendolo cada 25 segundos.
+Además de esto estará disponible para recibir invocaciones remotas.
+Hay que destcar la existencia de dos archivos de persistencia donde se guardarán el idMedia junto con su nombre ("mediaName.json") y los tags que cada usuario asigne a las diferentes medias ("mediaTags.json").
+Estos dos archivos son leidos al arrancar el servicio para que las busquedas se hagan accediendo a memoria sin necesidad de leer cada vez 
+que se necesite.
+
+También existe un fichero "file.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
+
+# ACLARACIÓN PYLINT
+
+
+
 
 This repository is a Python project template.
 It contains the following files and directories:

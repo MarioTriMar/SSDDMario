@@ -18,7 +18,7 @@ import threading
 import json
 import Ice
 
-Ice.loadSlice("iceflix.ice")
+Ice.loadSlice('iceflix/iceflix.ice')
 import IceFlix
 
 
@@ -57,7 +57,7 @@ def add_tags(media_id, tags, user_token, medias_tags):
         dicAux={}
         dicAux[media_id]=tags
         medias_tags[user_token]=dicAux
-    save_json("mediaTags.json", medias_tags)
+    save_json("iceflix/mediaTags.json", medias_tags)
 
 
 def remove_tags(media_id, tags, user_token, medias_tags):
@@ -66,17 +66,16 @@ def remove_tags(media_id, tags, user_token, medias_tags):
             lista_tags=medias_tags[user_token][media_id]
             index=lista_tags.index(tag)
             del medias_tags[user_token][media_id][index]
-            save_json("mediaTags.json", medias_tags)
+            save_json("iceflix/mediaTags.json", medias_tags)
     
 #SIRVIENTE CATALOG
 
 class MediaCatalog(IceFlix.MediaCatalog):
     def __init__(self):
-        self.mediasFile={}
         self.mediasProvider={}
         self.principal=None
-        self.mediasName=read_json("mediaName.json")
-        self.mediasTags=read_json("mediaTags.json")
+        self.mediasName=read_json("iceflix/mediaName.json")
+        self.mediasTags=read_json("iceflix/mediaTags.json")
 
 
     def newMedia(self, mediaId, provider, current=None):
@@ -86,7 +85,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
             self.mediasProvider[mediaId].append(provider)
         if mediaId not in self.mediasProvider:
             self.mediasProvider[mediaId]=[provider]
-        save_json("mediaName.json", self.mediasName)
+        save_json("iceflix/mediaName.json", self.mediasName)
         print(self.mediasName)
 
 
@@ -107,7 +106,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
             self.mediasName[mediaId]=name
         else:
             raise IceFlix.WrongMediaId()
-        save_json("mediaName.json", self.mediasName)
+        save_json("iceflix/mediaName.json", self.mediasName)
 
 
     def getTile(self, mediaId, userToken, current=None):
@@ -204,10 +203,12 @@ class Catalog(Ice.Application):
         adapter = broker.createObjectAdapterWithEndpoints("catalogAdapter", "tcp")
         proxy=adapter.addWithUUID(self.servant)
         adapter.activate()
-        print(proxy)
+        
         
         #Principal proxy
         proxy_principal = self.communicator().propertyToProxy("MainProxy.Proxy")
+        
+        
         principal_prx = IceFlix.MainPrx.checkedCast(proxy_principal)
         if not principal_prx:
             raise RuntimeError('Invalid proxy')
