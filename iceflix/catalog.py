@@ -85,7 +85,6 @@ class MediaCatalog(IceFlix.MediaCatalog):
         if mediaId not in self.mediasProvider:
             self.mediasProvider[mediaId]=[provider]
         save_json("iceflix/mediaName.json", self.mediasName)
-        print(self.mediasName)
 
 
     def removeMedia(self, mediaId, provider, current=None):
@@ -202,9 +201,10 @@ class Catalog(Ice.Application):
         adapter = broker.createObjectAdapterWithEndpoints("catalogAdapter", "tcp")
         proxy=adapter.addWithUUID(self.servant)
         adapter.activate()
-        
+        print(proxy)
         
         #Principal proxy
+        
         proxy_principal = self.communicator().propertyToProxy("MainProxy.Proxy")
         
         

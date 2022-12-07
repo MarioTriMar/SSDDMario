@@ -20,8 +20,20 @@ que se necesite.
 
 También existe un fichero "file.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
 
-# ACLARACIÓN PYLINT
-
+# ACLARACIÓN DISABLES PYLINT
+W0613 -> Unused argument.
+Este warning aparecía debido al argumento argv.
+C0103 -> Name doesn't fit the naming convention
+Esto se debe a que los métodos del sirviente no se ajustan a los nombre de python.
+C0116 -> Missing function docstring.
+C0115 -> Missing class docstring.
+C0301 -> Line too long.
+Este se debe a algunas líneas de mi código, en especial algunos if, que sobrepasan la opción max-line-length de pylint.
+C0303 -> Trailing whitespace.
+Este se debe a los espacios en blanco entre un final de linea y una nueva linea.
+C0413 -> Wrong import position
+E0401 -> Import error.
+Pylint no es capaz de importar un modulo.
 
 
 
