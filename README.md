@@ -21,6 +21,7 @@ que se necesite.
 Cabe mencionar la existencia de los siguientes fichero:
     - Fichero "file.py" dentro de /iceflix el cuál fue usado como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
     - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento de newService y de announce
+    - Fichero "client.py" dentro de /iceflix el cuál fue usado como una pequeña implementación para probar métodos con el addTags, removeTags, etc.
 
 
 
