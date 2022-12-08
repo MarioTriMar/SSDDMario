@@ -7,10 +7,12 @@ https://github.com/MarioTriMar/SSDDMario
 # EJECUCIÓN SERVICIO CATÁLOGO
 Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 
-1º Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
+1º Situarnos en .../SSDDMario
+
+2º Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
 el servicio obtendrá el proxy desde ahí.
 
-2º Ejecutar /run_service. 
+3º Ejecutar /run_service. 
 
 Una vez hecho esto el servicio lo primero que hará será anunciarse en el servidor principal y continuará haciendolo cada 25 segundos.
 Además de esto estará disponible para recibir invocaciones remotas.
@@ -19,9 +21,9 @@ Estos dos archivos son leidos al arrancar el servicio para que las busquedas se 
 que se necesite.
 
 Cabe mencionar la existencia de los siguientes fichero:
-    - Fichero "file.py" dentro de /iceflix el cuál fue usado como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
-    - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento de newService y de announce
-    - Fichero "client.py" dentro de /iceflix el cuál fue usado como una pequeña implementación para probar métodos con el addTags, removeTags, etc.
+ - Fichero "file.py" dentro de /iceflix el cuál fue usado como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
+ - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento de newService y de announce
+ - Fichero "client.py" dentro de /iceflix el cuál fue usado como una pequeña implementación para probar métodos con el addTags, removeTags, etc.
 
 
 
