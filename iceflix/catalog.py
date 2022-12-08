@@ -44,27 +44,27 @@ def announce_catalog(principal_prx ,catalog, id_catalog):
     time.start()
 
 
-def add_tags(media_id, tags, user_token, medias_tags):
-    if user_token in medias_tags:
-        if media_id in medias_tags[user_token]:
+def add_tags(media_id, tags, name, medias_tags):
+    if name in medias_tags:
+        if media_id in medias_tags[name]:
             for tag in tags:
-                if tag not in medias_tags[user_token][media_id]:
-                    medias_tags[user_token][media_id].append(tags)
-        if media_id not in medias_tags[user_token]:
-            medias_tags[user_token][media_id]=tags
-    if user_token not in medias_tags:
+                if tag not in medias_tags[name][media_id]:
+                    medias_tags[name][media_id].append(tags)
+        if media_id not in medias_tags[name]:
+            medias_tags[name][media_id]=tags
+    if name not in medias_tags:
         dicAux={}
         dicAux[media_id]=tags
-        medias_tags[user_token]=dicAux
+        medias_tags[name]=dicAux
     save_json("iceflix/mediaTags.json", medias_tags)
 
 
-def remove_tags(media_id, tags, user_token, medias_tags):
+def remove_tags(media_id, tags, name, medias_tags):
     for tag in tags:
-        if user_token in medias_tags and media_id in medias_tags[user_token] and tag in medias_tags[user_token][media_id]:
-            lista_tags=medias_tags[user_token][media_id]
+        if name in medias_tags and media_id in medias_tags[name] and tag in medias_tags[name][media_id]:
+            lista_tags=medias_tags[name][media_id]
             index=lista_tags.index(tag)
-            del medias_tags[user_token][media_id][index]
+            del medias_tags[name][media_id][index]
             save_json("iceflix/mediaTags.json", medias_tags)
     
 #SIRVIENTE CATALOG
@@ -112,7 +112,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
             raise IceFlix.Unauthorized()
-        
+        name=authenticator.whois(userToken)
         if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId()
         if mediaId not in self.mediasProvider:
@@ -122,10 +122,10 @@ class MediaCatalog(IceFlix.MediaCatalog):
             provider=listProviders[0]
         else:
             raise IceFlix.TemporaryUnavailable()
-        if mediaId not in self.mediasTags[userToken]:
+        if mediaId not in self.mediasTags[name]:
             raise IceFlix.WrongMediaId()
         name=self.mediasName[mediaId]
-        tags=self.mediasTags[userToken][mediaId]
+        tags=self.mediasTags[name][mediaId]
         mediaInfo=IceFlix.MediaInfo(name, tags)
         media=IceFlix.Media(mediaId, provider, mediaInfo)
         return media
@@ -150,19 +150,20 @@ class MediaCatalog(IceFlix.MediaCatalog):
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
             raise IceFlix.Unauthorized()
+        name=authenticator.whois(userToken)
         listaMediasTags=[]
         if includeAllTags is False:
-            if userToken in self.mediasTags:
-                listaMediasUser=self.mediasTags[userToken].keys()
+            if name in self.mediasTags:
+                listaMediasUser=self.mediasTags[name].keys()
                 for tag in tags:
                     for media in listaMediasUser:
-                        if tag in self.mediasTags[userToken][media] and media not in listaMediasTags:
+                        if tag in self.mediasTags[name][media] and media not in listaMediasTags:
                             listaMediasTags.append(media)
         else:
-            if userToken in self.mediasTags:
-                listaMediasUser=self.mediasTags[userToken].keys()
+            if name in self.mediasTags:
+                listaMediasUser=self.mediasTags[name].keys()
                 for media in listaMediasUser:
-                    listaTagsMedia=self.mediasTags[userToken][media]
+                    listaTagsMedia=self.mediasTags[name][media]
                     if(all(x in listaTagsMedia for x in tags)):
                         listaMediasTags.append(media)
         return listaMediasTags
@@ -175,17 +176,19 @@ class MediaCatalog(IceFlix.MediaCatalog):
             raise IceFlix.Unauthorized()
         if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId()
-        add_tags(mediaId, tags, userToken, self.mediasTags)
+        name=authenticator.whois(userToken)
+        add_tags(mediaId, tags, name, self.mediasTags)
 
 
     def removeTags(self, mediaId, tags, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
-            raise IceFlix.Unauthorized()
+            raise IceFlix.Unauthorized() 
         if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId()
-        remove_tags(mediaId, tags, userToken, self.mediasTags)
+        name=authenticator.whois(userToken)
+        remove_tags(mediaId, tags, name, self.mediasTags)
 
 
 #CLASE PRINCIPAL
