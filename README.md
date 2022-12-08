@@ -18,7 +18,11 @@ Hay que destcar la existencia de dos archivos de persistencia donde se guardará
 Estos dos archivos son leidos al arrancar el servicio para que las busquedas se hagan accediendo a memoria sin necesidad de leer cada vez 
 que se necesite.
 
-También existe un fichero "file.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
+Cabe mencionar la existencia de los siguientes fichero:
+    - Fichero "file.py" dentro de /iceflix el cuál fue usado como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
+    - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento de newService y de announce
+
+
 
 # ACLARACIÓN DISABLES PYLINT
 W0613 -> Unused argument.
