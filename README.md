@@ -7,12 +7,12 @@ https://github.com/MarioTriMar/SSDDMario
 # EJECUCIÓN SERVICIO CATÁLOGO
 Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 
-1º Situarnos en .../SSDDMario
+1. Situarnos en .../SSDDMario
 
-2º Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
+2. Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
 el servicio obtendrá el proxy desde ahí.
 
-3º Ejecutar /run_service. 
+3. Ejecutar /run_service. 
 
 Una vez hecho esto el servicio lo primero que hará será anunciarse en el servidor principal y continuará haciendolo cada 25 segundos.
 Además de esto estará disponible para recibir invocaciones remotas.
@@ -28,19 +28,14 @@ Cabe mencionar la existencia de los siguientes fichero:
 
 
 # ACLARACIÓN DISABLES PYLINT
-W0613 -> Unused argument.
-Este warning aparecía debido al argumento argv.
-C0103 -> Name doesn't fit the naming convention
-Esto se debe a que los métodos del sirviente no se ajustan a los nombre de python.
-C0116 -> Missing function docstring.
-C0115 -> Missing class docstring.
-C0301 -> Line too long.
-Este se debe a algunas líneas de mi código, en especial algunos if, que sobrepasan la opción max-line-length de pylint.
-C0303 -> Trailing whitespace.
-Este se debe a los espacios en blanco entre un final de linea y una nueva linea.
-C0413 -> Wrong import position
-E0401 -> Import error.
-Pylint no es capaz de importar un modulo.
+- W0613 -> Unused argument, este warning aparecía debido al argumento argv.
+- C0103 -> Name doesn't fit the naming convention, esto se debe a que los métodos del sirviente no se ajustan a los nombre de python.
+- C0116 -> Missing function docstring.
+- C0115 -> Missing class docstring.
+- C0301 -> Line too long, este se debe a algunas líneas de mi código, en especial algunos if, que sobrepasan la opción max-line-length de pylint.
+- C0303 -> Trailing whitespace, este se debe a los espacios en blanco entre un final de linea y una nueva linea.
+- C0413 -> Wrong import position
+- E0401 -> Import error. Pylint no es capaz de importar un modulo.
 
 
 
