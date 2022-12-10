@@ -103,7 +103,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         if mediaId in self.mediasName:
             self.mediasName[mediaId]=name
         else:
-            raise IceFlix.WrongMediaId()
+            raise IceFlix.WrongMediaId(mediaId)
         save_json("iceflix/mediaName.json", self.mediasName)
 
 
@@ -114,7 +114,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
             raise IceFlix.Unauthorized()
         name=authenticator.whois(userToken)
         if mediaId not in self.mediasName:
-            raise IceFlix.WrongMediaId()
+            raise IceFlix.WrongMediaId(mediaId)
         if mediaId not in self.mediasProvider:
             raise IceFlix.TemporaryUnavailable()
         listProviders=self.mediasProvider[mediaId]
@@ -123,11 +123,20 @@ class MediaCatalog(IceFlix.MediaCatalog):
         else:
             raise IceFlix.TemporaryUnavailable()
         if mediaId not in self.mediasTags[name]:
-            raise IceFlix.WrongMediaId()
+            raise IceFlix.WrongMediaId(mediaId)
         name=self.mediasName[mediaId]
         tags=self.mediasTags[name][mediaId]
-        mediaInfo=IceFlix.MediaInfo(name, tags)
-        media=IceFlix.Media(mediaId, provider, mediaInfo)
+
+        mediaInfo=IceFlix.MediaInfo()
+        media=IceFlix.Media()
+
+        mediaInfo.name=name
+        mediaInfo.tags=tags
+
+        media.mediaId=mediaId
+        media.provider=provider
+        media.info=mediaInfo
+
         return media
 
 
@@ -175,7 +184,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         if authorized is False:
             raise IceFlix.Unauthorized()
         if mediaId not in self.mediasName:
-            raise IceFlix.WrongMediaId()
+            raise IceFlix.WrongMediaId(mediaId)
         name=authenticator.whois(userToken)
         add_tags(mediaId, tags, name, self.mediasTags)
 
@@ -186,7 +195,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         if authorized is False:
             raise IceFlix.Unauthorized() 
         if mediaId not in self.mediasName:
-            raise IceFlix.WrongMediaId()
+            raise IceFlix.WrongMediaId(mediaId)
         name=authenticator.whois(userToken)
         remove_tags(mediaId, tags, name, self.mediasTags)
 
