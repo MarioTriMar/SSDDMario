@@ -16,7 +16,7 @@ el servicio obtendrá el proxy desde ahí.
 
 Una vez hecho esto el servicio lo primero que hará será anunciarse en el servidor principal y continuará haciendolo cada 25 segundos.
 Además de esto estará disponible para recibir invocaciones remotas.
-Hay que destcar la existencia de dos archivos de persistencia donde se guardarán el idMedia junto con su nombre ("mediaName.json") y los tags que cada usuario asigne a las diferentes medias ("mediaTags.json").
+Hay que destacar la existencia de dos archivos de persistencia donde se guardarán el idMedia junto con su nombre ("mediaName.json") y los tags que cada usuario asigne a las diferentes medias ("mediaTags.json").
 Estos dos archivos son leidos al arrancar el servicio para que las busquedas se hagan accediendo a memoria sin necesidad de leer cada vez 
 que se necesite.
 

@@ -13,9 +13,11 @@ class Main(IceFlix.Main):
     def newService(self, service, serviceId, current=None):
         print("newService")
         print (service)
+        print (serviceId)
     def announce(self, service, serviceId, current=None):
         print("announce")
         print(service)
+        print (serviceId)
     def getAuthenticator(self):
         return 0
     def getFileService(self):
