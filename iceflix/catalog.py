@@ -213,6 +213,7 @@ class Catalog(Ice.Application):
         adapter = broker.createObjectAdapterWithEndpoints("catalogAdapter", "tcp")
         proxy=adapter.addWithUUID(self.servant)
         adapter.activate()
+        print("Proxy propio:")
         print(proxy)
         
         #Principal proxy
