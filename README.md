@@ -12,7 +12,7 @@ Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 2. Necesitaremos el proxy del servicio principal, una vez lo sepamos debemos añadirselo al catalog.config (línea MainProxy.Proxy), ya que,
 el servicio obtendrá el proxy desde ahí.
 
-3. Ejecutar /run_service. 
+3. Ejecutar ./run_service. 
 
 Una vez hecho esto el servicio lo primero que hará será anunciarse en el servidor principal y continuará haciendolo cada 25 segundos.
 Además de esto estará disponible para recibir invocaciones remotas.
