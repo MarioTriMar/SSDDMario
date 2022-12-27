@@ -40,7 +40,7 @@ def read_json(fichero):
     return dic
 
 def announce_catalog(principal_prx ,catalog, id_catalog):
-    time = threading.Timer(25,announce_catalog,[principal_prx, catalog, id_catalog])
+    time = threading.Timer(8,announce_catalog,[principal_prx, catalog, id_catalog])
     principal_prx.announce(catalog, id_catalog)
     time.start()
 
@@ -74,6 +74,8 @@ class MediaCatalog(IceFlix.MediaCatalog):
     def __init__(self):
         self.mediasProvider={}
         self.principal=None
+        self.catalogUpdates=None
+        self.serviceId=None
         self.mediasName=read_json("iceflix/mediaName.json")
         self.mediasTags=read_json("iceflix/mediaTags.json")
 
@@ -201,34 +203,75 @@ class MediaCatalog(IceFlix.MediaCatalog):
         remove_tags(mediaId, tags, name, self.mediasTags)
 
 
+class Announcement(IceFlix.Announcement):
+    def __init__(self):
+        self.announcement=None
+    def announce(service, serviceId, current=None):
+        """TODO"""
+
+class FileAvailabilityAnnounce(IceFlix.FileAvailabilityAnnounce):
+    def announceFiles(mediaIds, serviceId, current=None):
+        """TODO"""
+
+class CatalogUpdate(IceFlix.CatalogUpdate):
+    def renameTile(mediaId, newName, serviceId, current=None):
+        """TODO"""
+    def addTags(mediaId, user, tags, serviceId, current=None):
+        """TODO"""
+    def removeTags(mediaId, user, tags, current=None):
+        """TODO"""
 #CLASE PRINCIPAL
 
 class Catalog(Ice.Application):
     def __init__(self):
         super().__init__()
         self.servant=MediaCatalog()
-
+        self.servantFileAvailability=FileAvailabilityAnnounce()
+        self.servantCatalogUpdates=CatalogUpdate()
+        self.servantAnnouncement=Announcement()
     def run(self, argv):
-        #Catalog proxy
+        
         broker = self.communicator()
         adapter = broker.createObjectAdapterWithEndpoints("catalogAdapter", "tcp")
-        proxy=adapter.addWithUUID(self.servant)
+        my_proxy=adapter.addWithUUID(self.servant)
+        proxy_file_availability=adapter.addWithUUID(self.servantFileAvailability)
+        proxy_catalog_updates=adapter.addWithUUID(self.servantCatalogUpdates)
+        proxy_announcement=adapter.addWithUUID(self.servantAnnouncement)
         adapter.activate()
-        print("Proxy propio:")
-        print(proxy)
         
         proxyTopic=self.communicator().stringToProxy("IceStormAdmin.TopicManager.Default")
         topicManager=IceStorm.TopicManagerPrx.checkedCast(proxyTopic)
         try:
-            announcements=topicManager.retrieve("Announcements")  
+            topic_announcements=topicManager.retrieve("Announcements")  
         except IceStorm.NoSuchTopic:
-            announcements=topicManager.create("Announcements")  
+            topic_announcements=topicManager.create("Announcements")  
         
         try:
-            catalogUpdates=topicManager.retrieve("CatalogUpdates")  
+            topic_catalogUpdates=topicManager.retrieve("CatalogUpdates")  
         except IceStorm.NoSuchTopic:
-            catalogUpdates=topicManager.create("CatalogUpdate")  
+            topic_catalogUpdates=topicManager.create("CatalogUpdate")  
         
+        try:
+            topic_fileAvailability=topicManager.retrieve("FileAvailabilityAnnounce")  
+        except IceStorm.NoSuchTopic:
+            topic_fileAvailability=topicManager.create("FileAvailabilityAnnounce")  
+        
+        topic_announcements.subscribeAndGetPublisher({}, proxy_announcement)
+        topic_catalogUpdates.subscribeAndGetPublisher({}, proxy_catalog_updates)
+        topic_fileAvailability.subscribeAndGetPublisher({}, proxy_file_availability)
+
+        announcement_proxy=topic_announcements.getPublisher()
+        announcement=IceFlix.AnnouncementPrx.uncheckedCast(announcement_proxy)
+
+        catalogUpdates_proxy=topic_catalogUpdates.getPublisher()
+        catalogUpdate=IceFlix.CatalogUpdatePrx.uncheckedCast(catalogUpdates_proxy)
+
+        self.servant.serviceId=str(my_proxy.ice_getIdentity().name)
+        self.servant.catalogUpdates=catalogUpdate
+        self.servantAnnouncement.announcement=announcement
+        timer=threading.Timer(8,announce_catalog,[announcement,my_proxy,str(my_proxy.ice_getIdentity().name)])
+        timer.start()
+
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
         return 1
