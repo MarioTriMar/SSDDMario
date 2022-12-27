@@ -16,6 +16,7 @@ import sys
 import threading
 import json
 import Ice
+import IceStorm
 
 Ice.loadSlice('iceflix/iceflix.ice')
 import IceFlix
@@ -216,17 +217,17 @@ class Catalog(Ice.Application):
         print("Proxy propio:")
         print(proxy)
         
-        #Principal proxy
-        proxy_principal = self.communicator().propertyToProxy("MainProxy.Proxy")
-        principal_prx = IceFlix.MainPrx.checkedCast(proxy_principal)
-        if not principal_prx:
-            raise RuntimeError('Invalid proxy')
-        principal_prx.newService(proxy, str(proxy.ice_getIdentity().name))
-        self.servant.principal=principal_prx
-
-        #Announce Handler
-        timer = threading.Timer(25,announce_catalog,[principal_prx,proxy,str(proxy.ice_getIdentity().name)])
-        timer.start()
+        proxyTopic=self.communicator().stringToProxy("IceStormAdmin.TopicManager.Default")
+        topicManager=IceStorm.TopicManagerPrx.checkedCast(proxyTopic)
+        try:
+            announcements=topicManager.retrieve("Announcements")  
+        except IceStorm.NoSuchTopic:
+            announcements=topicManager.create("Announcements")  
+        
+        try:
+            catalogUpdates=topicManager.retrieve("CatalogUpdates")  
+        except IceStorm.NoSuchTopic:
+            catalogUpdates=topicManager.create("CatalogUpdate")  
         
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
