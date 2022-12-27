@@ -121,8 +121,8 @@ class MediaCatalog(IceFlix.MediaCatalog):
         if listProviders:
             provider=listProviders[0]
         else:
-            raise IceFlix.TemporaryUnavailable()
-        if mediaId not in self.mediasTags[name]:
+            provider=None
+        if name not in self.mediasTags or mediaId not in self.mediasTags[name]:
             raise IceFlix.WrongMediaId(mediaId)
         name=self.mediasName[mediaId]
         tags=self.mediasTags[name][mediaId]
