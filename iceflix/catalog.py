@@ -14,6 +14,7 @@
 
 import sys
 import threading
+import random
 import json
 import Ice
 import IceStorm
@@ -21,10 +22,6 @@ import IceStorm
 Ice.loadSlice('iceflix/iceflix.ice')
 import IceFlix
 
-
-
-#Threading -> libreria para paralelismo.
-#Manejo del announce cada 25 segundos
 
 
 #MÉTODOS AUXILIARES
@@ -39,9 +36,9 @@ def read_json(fichero):
         dic=json.load(f)
     return dic
 
-def announce_catalog(principal_prx ,catalog, id_catalog):
-    time = threading.Timer(8,announce_catalog,[principal_prx, catalog, id_catalog])
-    principal_prx.announce(catalog, id_catalog)
+def announce_catalog(announcement ,catalog, id_catalog):
+    time = threading.Timer(8,announce_catalog,[announcement, catalog, id_catalog])
+    announcement.announce(catalog, id_catalog)
     time.start()
 
 
@@ -72,6 +69,10 @@ def remove_tags(media_id, tags, name, medias_tags):
 
 class MediaCatalog(IceFlix.MediaCatalog):
     def __init__(self):
+        self.main_services={}
+        self.catalog_services={}
+        self.file_services={}
+
         self.mediasProvider={}
         self.principal=None
         self.catalogUpdates=None
@@ -80,35 +81,17 @@ class MediaCatalog(IceFlix.MediaCatalog):
         self.mediasTags=read_json("iceflix/mediaTags.json")
 
 
-    def newMedia(self, mediaId, provider, current=None):
-        if mediaId not in self.mediasName:
-            self.mediasName[mediaId]=mediaId
-        if mediaId in self.mediasProvider:
-            self.mediasProvider[mediaId].append(provider)
-        if mediaId not in self.mediasProvider:
-            self.mediasProvider[mediaId]=[provider]
-        save_json("iceflix/mediaName.json", self.mediasName)
-
-
-    def removeMedia(self, mediaId, provider, current=None):
-        if mediaId in self.mediasProvider:
-            if provider in self.mediasProvider[mediaId]:
-                listProviders= self.mediasProvider[mediaId]
-                indexPro=listProviders.index(provider)
-                del self.mediasProvider[mediaId][indexPro]
-
 
     def renameTile(self, mediaId, name, adminToken, current=None):
-        authenticator=self.principal.getAuthenticator()
-        admin = authenticator.isAdmin(adminToken)
+        main_service=random.choice(list(self.main_services.values()))
+        main_service=IceFlix.MainPrx.checkedCast(main_service)
+        authenticator=main_service.getAuthenticator()
+        admin=authenticator.isAdmin(adminToken)
         if admin is False:
             raise IceFlix.Unauthorized()
-        if mediaId in self.mediasName:
-            self.mediasName[mediaId]=name
-        else:
+        if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId(mediaId)
-        save_json("iceflix/mediaName.json", self.mediasName)
-
+        self.catalogUpdates.renameTile(mediaId, name, self.serviceId)
 
     def getTile(self, mediaId, userToken, current=None):
         authenticator=self.principal.getAuthenticator()
@@ -182,44 +165,90 @@ class MediaCatalog(IceFlix.MediaCatalog):
 
 
     def addTags(self, mediaId, tags, userToken, current=None):
-        authenticator=self.principal.getAuthenticator()
+        main_service=random.choice(list(self.main_services.values()))
+        main_service=IceFlix.MainPrx.checkedCast(main_service)
+        authenticator=main_service.getAuthenticator()
+
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
             raise IceFlix.Unauthorized()
         if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId(mediaId)
         name=authenticator.whois(userToken)
-        add_tags(mediaId, tags, name, self.mediasTags)
-
-
+        self.catalogUpdates.addTags(mediaId, name, tags, self.serviceId)
+        
     def removeTags(self, mediaId, tags, userToken, current=None):
-        authenticator=self.principal.getAuthenticator()
+        main_service=random.choice(list(self.main_services.values()))
+        main_service=IceFlix.MainPrx.checkedCast(main_service)
+        authenticator=main_service.getAuthenticator()
+
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
-            raise IceFlix.Unauthorized() 
+            raise IceFlix.Unauthorized()
         if mediaId not in self.mediasName:
             raise IceFlix.WrongMediaId(mediaId)
         name=authenticator.whois(userToken)
-        remove_tags(mediaId, tags, name, self.mediasTags)
+        self.catalogUpdates.removeTags(mediaId, name, tags, self.serviceId)
+        
+    def getAllDeltas():
+        """TODO"""
 
+
+# SIRVIENTE ANNOUNCEMENT
 
 class Announcement(IceFlix.Announcement):
     def __init__(self):
-        self.announcement=None
-    def announce(service, serviceId, current=None):
-        """TODO"""
+        self.catalog=None
+    def announce(self, service, serviceId, current=None):
+        if serviceId in self.catalog.main_services.keys():
+            return
+        if serviceId in self.catalog.catalog_services.keys():
+            return
+        if serviceId in self.catalog.file_services.keys():
+            return
+        if serviceId == self.catalog.serviceId:
+            return
+
+        if service.ice_isA('::IceFlix::Main'):
+            self.catalog.main_services[serviceId]=IceFlix.MainPrx.uncheckedCast(service)
+        if service.ice_isA('::IceFlix::MediaCatalog'):
+            self.catalog.catalog_services[serviceId]=IceFlix.MediaCatalogPrx.uncheckedCast(service)
+        if service.ice_isA('::IceFlix::FileService'):
+            self.catalog.file_services[serviceId]=IceFlix.FileServicePrx.uncheckedCast(service)
+
+
+#SIRVIENTE FILEAVAILABILITY
 
 class FileAvailabilityAnnounce(IceFlix.FileAvailabilityAnnounce):
-    def announceFiles(mediaIds, serviceId, current=None):
-        """TODO"""
+    def __init__(self):
+        self.catalog=None
+    def announceFiles(self, mediaIds, serviceId, current=None):
+        if serviceId in self.catalog.file_services.keys():
+            for media in mediaIds:
+                if media not in self.catalog.mediasName:
+                    self.catalog.mediasName[media]=media
+                if media in self.catalog.mediasProvider:
+                    self.catalog.mediasProvider[media].append(self.catalog.file_services[serviceId])
+                if media not in self.catalog.mediasProvider:
+                    self.catalog.mediasProvider[media]=[self.catalog.file_services[serviceId]]
+            save_json("iceflix/mediaName.json", self.catalog.mediasName)
 
+
+#SIRVIENTE CATALOGUPDATE
 class CatalogUpdate(IceFlix.CatalogUpdate):
-    def renameTile(mediaId, newName, serviceId, current=None):
-        """TODO"""
-    def addTags(mediaId, user, tags, serviceId, current=None):
-        """TODO"""
-    def removeTags(mediaId, user, tags, current=None):
-        """TODO"""
+    def __init__(self):
+        self.catalog=None
+    def renameTile(self, mediaId, newName, serviceId, current=None):
+        if serviceId in self.catalog.catalog_services.keys():
+            self.catalog.mediasName[mediaId]=newName
+        save_json("iceflix/mediaName.json", self.catalog.mediasName)
+    def addTags(self, mediaId, user, tags, serviceId, current=None):
+        if serviceId in self.catalog.catalog_services.keys():
+            add_tags(mediaId, tags, user, self.catalog.mediasTags)
+    def removeTags(self, mediaId, user, tags, serviceId, current=None):
+        if serviceId in self.catalog.catalog_services.keys():
+            remove_tags(mediaId, tags, user, self.catalog.mediasTags)
+
 #CLASE PRINCIPAL
 
 class Catalog(Ice.Application):
@@ -268,7 +297,9 @@ class Catalog(Ice.Application):
 
         self.servant.serviceId=str(my_proxy.ice_getIdentity().name)
         self.servant.catalogUpdates=catalogUpdate
-        self.servantAnnouncement.announcement=announcement
+        self.servantCatalogUpdates.catalog=self.servant
+        self.servantAnnouncement.catalog=self.servant
+        self.servantFileAvailability.catalog=self.servant
         timer=threading.Timer(8,announce_catalog,[announcement,my_proxy,str(my_proxy.ice_getIdentity().name)])
         timer.start()
 
