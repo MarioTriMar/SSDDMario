@@ -94,7 +94,9 @@ class MediaCatalog(IceFlix.MediaCatalog):
         self.catalogUpdates.renameTile(mediaId, name, self.serviceId)
 
     def getTile(self, mediaId, userToken, current=None):
-        authenticator=self.principal.getAuthenticator()
+        main_service=random.choice(list(self.main_services.values()))
+        main_service=IceFlix.MainPrx.checkedCast(main_service)
+        authenticator=main_service.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
             raise IceFlix.Unauthorized()
@@ -141,7 +143,9 @@ class MediaCatalog(IceFlix.MediaCatalog):
 
 
     def getTilesByTags(self, tags, includeAllTags, userToken, current=None):
-        authenticator=self.principal.getAuthenticator()
+        main_service=random.choice(list(self.main_services.values()))
+        main_service=IceFlix.MainPrx.checkedCast(main_service)
+        authenticator=main_service.getAuthenticator()
         authorized = authenticator.isAuthorized(userToken)
         if authorized is False:
             raise IceFlix.Unauthorized()
@@ -190,8 +194,12 @@ class MediaCatalog(IceFlix.MediaCatalog):
         name=authenticator.whois(userToken)
         self.catalogUpdates.removeTags(mediaId, name, tags, self.serviceId)
         
-    def getAllDeltas():
-        """TODO"""
+    def getAllDeltas(self):
+        for media in self.mediasName.keys():
+            self.catalogUpdates.renameTile(media, self.mediasName[media], self.serviceId)
+        for user in self.mediasTags.keys():
+            for media in self.mediasTags[user].keys():
+                self.catalogUpdates.addTags(media, user, self.mediasTags[user][media], self.serviceId)
 
 
 # SIRVIENTE ANNOUNCEMENT
@@ -206,8 +214,7 @@ class Announcement(IceFlix.Announcement):
             return
         if serviceId in self.catalog.file_services.keys():
             return
-        if serviceId == self.catalog.serviceId:
-            return
+        
 
         if service.ice_isA('::IceFlix::Main'):
             self.catalog.main_services[serviceId]=IceFlix.MainPrx.uncheckedCast(service)
@@ -241,12 +248,23 @@ class CatalogUpdate(IceFlix.CatalogUpdate):
     def renameTile(self, mediaId, newName, serviceId, current=None):
         if serviceId in self.catalog.catalog_services.keys():
             self.catalog.mediasName[mediaId]=newName
+            if mediaId not in self.catalog.mediasProvider.keys():
+                self.catalog.mediasProvider[mediaId]=None
         save_json("iceflix/mediaName.json", self.catalog.mediasName)
     def addTags(self, mediaId, user, tags, serviceId, current=None):
         if serviceId in self.catalog.catalog_services.keys():
+            if mediaId not in self.catalog.mediasName.keys():
+                self.catalog.mediasName[mediaId]=mediaId
+            if mediaId not in self.catalog.mediasProvider.keys():
+                self.catalog.mediasProvider[mediaId]=None
             add_tags(mediaId, tags, user, self.catalog.mediasTags)
+
     def removeTags(self, mediaId, user, tags, serviceId, current=None):
         if serviceId in self.catalog.catalog_services.keys():
+            if mediaId not in self.catalog.mediasName.keys():
+                self.catalog.mediasName[mediaId]=mediaId
+            if mediaId not in self.catalog.mediasProvider.keys():
+                self.catalog.mediasProvider[mediaId]=None
             remove_tags(mediaId, tags, user, self.catalog.mediasTags)
 
 #CLASE PRINCIPAL
