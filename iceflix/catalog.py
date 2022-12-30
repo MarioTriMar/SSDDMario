@@ -122,16 +122,14 @@ class MediaCatalog(IceFlix.MediaCatalog):
             provider=listProviders[0]
         else:
             provider=None
-        if name not in self.mediasTags or mediaId not in self.mediasTags[name]:
-            raise IceFlix.WrongMediaId(mediaId)
-        name=self.mediasName[mediaId]
-        tags=self.mediasTags[name][mediaId]
-
         mediaInfo=IceFlix.MediaInfo()
         media=IceFlix.Media()
-
+        if name not in self.mediasTags or mediaId not in self.mediasTags[name]:
+            mediaInfo.tags=None
+        else:
+            mediaInfo.tags=self.mediasTags[name][mediaId]
+        name=self.mediasName[mediaId]
         mediaInfo.name=name
-        mediaInfo.tags=tags
 
         media.mediaId=mediaId
         media.provider=provider
