@@ -110,16 +110,15 @@ class MediaCatalog(IceFlix.MediaCatalog):
             provider=listProviders[0]
         else:
             provider=None
-        if name not in self.mediasTags or mediaId not in self.mediasTags[name]:
-            raise IceFlix.WrongMediaId(mediaId)
-        name=self.mediasName[mediaId]
-        tags=self.mediasTags[name][mediaId]
-
         mediaInfo=IceFlix.MediaInfo()
         media=IceFlix.Media()
-
-        mediaInfo.name=name
-        mediaInfo.tags=tags
+        if name not in self.mediasTags or mediaId not in self.mediasTags[name]:
+            mediaInfo.tags=None
+        else:
+            mediaInfo.tags=self.mediasTags[name][mediaId]
+        mediaName=self.mediasName[mediaId]
+        
+        mediaInfo.name=mediaName
 
         media.mediaId=mediaId
         media.provider=provider
@@ -306,7 +305,6 @@ class Catalog(Ice.Application):
         topic_announcements.subscribeAndGetPublisher({}, proxy_announcement)
         topic_catalogUpdates.subscribeAndGetPublisher({}, proxy_catalog_updates)
         topic_fileAvailability.subscribeAndGetPublisher({}, proxy_file_availability)
-
         announcement_proxy=topic_announcements.getPublisher()
         announcement=IceFlix.AnnouncementPrx.uncheckedCast(announcement_proxy)
 
