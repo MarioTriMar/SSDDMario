@@ -300,8 +300,12 @@ class Catalog(Ice.Application):
         proxy_announcement=adapter.addWithUUID(self.servantAnnouncement)
         adapter.activate()
         
-        proxyTopic=self.communicator().stringToProxy("IceStormAdmin.TopicManager.Default")
+        proxyTopic=self.communicator().propertyToProxy("IceStormAdmin.TopicManager.Default")
+        
+        
         topicManager=IceStorm.TopicManagerPrx.checkedCast(proxyTopic)
+        print(proxyTopic)
+        
         try:
             topic_announcements=topicManager.retrieve("Announcements")  
         except IceStorm.NoSuchTopic:
