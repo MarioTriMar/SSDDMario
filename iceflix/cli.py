@@ -27,7 +27,7 @@ def main_service():
 def catalog_service():
     """Handles the `catalogservice` CLI command."""
     setup_logging()
-    logging.info("Main service starting...")
+    logging.info("Catalog service starting...")
     catalog=Catalog()
     return (catalog.main(sys.argv))
 

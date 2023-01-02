@@ -41,6 +41,21 @@ def announce_catalog(announcement ,catalog, id_catalog):
     announcement.announce(catalog, id_catalog)
     time.start()
 
+def arranque(mediaCatalog, announcementService, catalogUpdates, fileAvailability, announcement, catalogUpdate, my_proxy):
+    if mediaCatalog.main_services:
+        if mediaCatalog.catalog_services:
+            mediaCatalog.catalog_services[0].getAllDeltas()
+        mediaCatalog.serviceId=str(my_proxy.ice_getIdentity().name)
+        mediaCatalog.catalogUpdates=catalogUpdate
+        catalogUpdates.catalog=mediaCatalog
+        announcementService.catalog=mediaCatalog
+        fileAvailability.catalog=mediaCatalog
+        timer=threading.Timer(8,announce_catalog,[announcement,my_proxy,str(my_proxy.ice_getIdentity().name)])
+        timer.start()
+    else:
+        sys.exit()
+    
+
 
 def add_tags(media_id, tags, name, medias_tags):
     if name in medias_tags:
@@ -305,12 +320,18 @@ class Catalog(Ice.Application):
         topic_announcements.subscribeAndGetPublisher({}, proxy_announcement)
         topic_catalogUpdates.subscribeAndGetPublisher({}, proxy_catalog_updates)
         topic_fileAvailability.subscribeAndGetPublisher({}, proxy_file_availability)
+
         announcement_proxy=topic_announcements.getPublisher()
         announcement=IceFlix.AnnouncementPrx.uncheckedCast(announcement_proxy)
 
         catalogUpdates_proxy=topic_catalogUpdates.getPublisher()
         catalogUpdate=IceFlix.CatalogUpdatePrx.uncheckedCast(catalogUpdates_proxy)
 
+        timer_announcement=threading.Timer(12, arranque, [self.servant, self.servantAnnouncement, self.servantCatalogUpdates, self.servantFileAvailability,
+            announcement, catalogUpdate, my_proxy])
+        timer_announcement.start()
+        
+        """
         self.servant.serviceId=str(my_proxy.ice_getIdentity().name)
         self.servant.catalogUpdates=catalogUpdate
         self.servantCatalogUpdates.catalog=self.servant
@@ -318,10 +339,12 @@ class Catalog(Ice.Application):
         self.servantFileAvailability.catalog=self.servant
         timer=threading.Timer(8,announce_catalog,[announcement,my_proxy,str(my_proxy.ice_getIdentity().name)])
         timer.start()
-
+        """
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
         return 1
+
+
 
 if __name__ == '__main__':
     catalog=Catalog()
