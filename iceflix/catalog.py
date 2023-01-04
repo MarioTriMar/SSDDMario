@@ -44,17 +44,14 @@ def announce_catalog(announcement ,catalog, id_catalog):
 def arranque(mediaCatalog, announcement, my_proxy):
     if mediaCatalog.main_services:
         if mediaCatalog.catalog_services:
-            print("Hay catalog")
             catalogs=list(mediaCatalog.catalog_services.values())
-            print(catalogs[0])
             catalog=IceFlix.MediaCatalogPrx.checkedCast(catalogs[0])
             catalog.getAllDeltas()
-            
-        else:
-            print("No hay catalogs")
+        announcement.announce(my_proxy, str(my_proxy.ice_getIdentity().name))
         timer=threading.Timer(8,announce_catalog,[announcement,my_proxy,str(my_proxy.ice_getIdentity().name)])
         timer.start()
     else:
+        print("No main service available, program has been aborted")
         sys.exit()
     
 
@@ -91,7 +88,7 @@ class MediaCatalog(IceFlix.MediaCatalog):
         self.file_services={}
 
         self.mediasProvider={}
-        self.principal=None
+        
         self.catalogUpdates=None
         self.serviceId=None
         self.mediasName=read_json("iceflix/mediaName.json")
@@ -301,7 +298,6 @@ class Catalog(Ice.Application):
         proxy_file_availability=adapter.addWithUUID(self.servantFileAvailability)
         proxy_catalog_updates=adapter.addWithUUID(self.servantCatalogUpdates)
         proxy_announcement=adapter.addWithUUID(self.servantAnnouncement)
-        print(my_proxy)
         adapter.activate()
         
         proxyTopic=self.communicator().propertyToProxy("IceStormAdmin.TopicManager.Default")
