@@ -87,6 +87,9 @@ class MediaCatalog(IceFlix.MediaCatalog):
         self.catalog_services={}
         self.file_services={}
 
+
+        
+
         self.mediasProvider={}
         
         self.catalogUpdates=None
@@ -220,23 +223,62 @@ class MediaCatalog(IceFlix.MediaCatalog):
 class Announcement(IceFlix.Announcement):
     def __init__(self):
         self.catalog=None
+
+        self.main_timers={}
+        self.catalog_timers={}
+        self.file_timers={}
     def announce(self, service, serviceId, current=None):
-        print(serviceId)
+        
         if serviceId in self.catalog.main_services.keys():
+            print("Service reannouncement")
+            self.main_timers[serviceId].cancel()
+            self.main_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.main_timers])
+            self.main_timers[serviceId].start()
             return
+            
         if serviceId in self.catalog.catalog_services.keys():
+            self.catalog_timers[serviceId].cancel()
+            self.catalog_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.catalog_timers])
+            self.catalog_timers[serviceId].start()
             return
+            
         if serviceId in self.catalog.file_services.keys():
+            self.file_timers[serviceId].cancel()
+            self.file_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.file_timers])
+            self.file_timers[serviceId].start()
             return
         
-
         if service.ice_isA('::IceFlix::Main'):
+            print("New main service")
             self.catalog.main_services[serviceId]=IceFlix.MainPrx.uncheckedCast(service)
+            self.main_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.main_timers])
+            self.main_timers[serviceId].start()
         if service.ice_isA('::IceFlix::MediaCatalog'):
             self.catalog.catalog_services[serviceId]=IceFlix.MediaCatalogPrx.uncheckedCast(service)
+            self.catalog_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.catalog_timers])
+            self.catalog_timers[serviceId].start()
         if service.ice_isA('::IceFlix::FileService'):
             self.catalog.file_services[serviceId]=IceFlix.FileServicePrx.uncheckedCast(service)
+            self.file_timers[serviceId]=threading.Timer(12, timer_announce, [serviceId, self.catalog, self.file_timers])
+            self.file_timers[serviceId].start()
 
+
+def timer_announce(serviceId, catalog, timers):
+    print("Borrar service")
+    print(serviceId)
+    
+    if serviceId in catalog.main_services.keys():
+        print("Mains")
+        print(catalog.main_services)
+        timers[serviceId].cancel()
+        del catalog.main_services[serviceId]
+
+        print(catalog.main_services)
+    if serviceId in catalog.file_services.keys():
+        del catalog.file_service[serviceId]
+    if serviceId in catalog.catalog_services.keys():
+        del catalog.catalog_services[serviceId]
+    del timers[serviceId]
 
 #SIRVIENTE FILEAVAILABILITY
 
@@ -347,6 +389,9 @@ class Catalog(Ice.Application):
         timer.start()
         """
         self.shutdownOnInterrupt()
+        #topic_announcements.unsubscribe()
+        #topic_catalogUpdates.unsubscribe()
+        #topic_fileAvailability.unsubscribe()
         broker.waitForShutdown()
         return 1
 

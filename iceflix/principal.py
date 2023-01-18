@@ -59,6 +59,8 @@ class file(Ice.Application):
         timer.start()
 
         self.shutdownOnInterrupt()
+        announcement_proxy.unsubscribe()
+        
         broker.waitForShutdown()
         return 1
 sys.exit(file().main(sys.argv))
