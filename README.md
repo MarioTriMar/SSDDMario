@@ -23,13 +23,13 @@ que se necesite.
     - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento del announce usando IceStorm.
 
 En cuanto a las librerias utilizadas: 
-    - Las necesarias para utilizar Ice (Ice, IceFlix).
-    - La necesaria para usar IceStorm (IceStorm).
-    - La librería estándar sys.
-    - La librería para poder abrir hilos (threading)-
-    - La librería os para poder cerrar el programa desde un hilo, ya que sys.exit no funcionaba correctamente. 
-    - La librería random, usada para seleccionar servicios aleatorios.
-    - La librería json para la persistencia.
+  - Las necesarias para utilizar Ice (Ice, IceFlix).
+  - La necesaria para usar IceStorm (IceStorm).
+  - La librería estándar sys.
+  - La librería para poder abrir hilos (threading)-
+  - La librería os para poder cerrar el programa desde un hilo, ya que sys.exit no funcionaba correctamente. 
+  - La librería random, usada para seleccionar servicios aleatorios.
+  - La librería json para la persistencia.
 # EJECUCIÓN SERVICIO CATÁLOGO
 Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 
@@ -39,7 +39,8 @@ Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 
 3. Ejecutar ./run_service. 
 
-Una vez hecho esto el servicio se subscribirá y se hará publicador de los tres topics que necesita. Una vez hecho esto esperará 12 segundos mientras recibe anunciamientos y comprobará si hay algun servidor principal. Si no lo hay el programa abortará. En caso de que sí lo haya mirará si es el primer catálogo en anunciarse. Si es así avisará por tierminal que es el primero en llegar y considerará que sus datos persistentes son los últimos. En caso contrario, pedirá al catalogo que ha llegado antes que informe sobre sus datos para actualizarse y mostrará por pantalla todos los cambios recibidos.
+Una vez hecho esto el servicio se subscribirá y se hará publicador de los tres topics que necesita. Una vez hecho esto esperará 12 segundos mientras recibe anunciamientos y comprobará si hay algun servidor principal.  
+Si no lo hay el programa abortará. En caso de que sí lo haya mirará si es el primer catálogo en anunciarse. Si es así avisará por tierminal que es el primero en llegar y considerará que sus datos persistentes son los últimos. En caso contrario, pedirá al catalogo que ha llegado antes que informe sobre sus datos para actualizarse y mostrará por pantalla todos los cambios recibidos.  
 Una vez hecho esto el catálogo se anunciará cada 8 segundos estando ya disponible para la ejecución de toda su funcionalidad.
 En la terminal veremos los servicios que llegan nuevos y los que se refrescan cada X tiempo. En caso de que no se refresquen en 12 segundo estos serán supuestos por muertos y se borrarán.
 
