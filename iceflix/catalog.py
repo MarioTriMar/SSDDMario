@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+#DISABLES ACLARADOS EN EL README
 #pylint: disable=C0103
 #pylint: disable=C0303
 #pylint: disable=C0301
