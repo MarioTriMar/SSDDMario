@@ -6,7 +6,8 @@ https://github.com/MarioTriMar/SSDDMario
 EL CÓDIGO DE LA ENTREGA FINAL SE ENCUENTRA EN LA RAMA "entrega2"
 
 # CONFIGURACIÓN 
-1. run_icestorm: este fichero no ha sido modificado, está conforme se nos proporcionó.
+1. run_icestorm: este fichero no ha sido modificado, excepto el nombre del topic FileAvailabilityAnnounce, el cuál se nos proporcionó con una "s" al final cuando 
+en la guía del laboratorio aparece que debe ser si "s".
 2. run_service: respecto a la anterior entrega, se tuvo que cambiar el fichero .config, pasando de catalog.config a icestorm.config, de donde
 el código obtiene  el TopicManager.
 3. Además de esto, para que el run_service funcionase se hizo lo siguiente:

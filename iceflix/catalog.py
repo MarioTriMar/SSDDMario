@@ -379,7 +379,7 @@ class Catalog(Ice.Application):
         try:
             topic_catalogUpdates=topicManager.retrieve("CatalogUpdates")  
         except IceStorm.NoSuchTopic:
-            topic_catalogUpdates=topicManager.create("CatalogUpdate")  
+            topic_catalogUpdates=topicManager.create("CatalogUpdates")  
         
         try:
             topic_fileAvailability=topicManager.retrieve("FileAvailabilityAnnounce")  

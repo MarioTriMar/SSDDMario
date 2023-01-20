@@ -26,4 +26,4 @@ echo "Waiting for IceStorm to become available..."
 wait_icestorm
 
 echo "Creting topics..."
-create_topics "Announcements" "UserUpdates" "CatalogUpdates" "FileAvailabilityAnnounces"
+create_topics "Announcements" "UserUpdates" "CatalogUpdates" "FileAvailabilityAnnounce"
