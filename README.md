@@ -10,26 +10,26 @@ EL CÓDIGO DE LA ENTREGA FINAL SE ENCUENTRA EN LA RAMA "entrega2"
 2. run_service: respecto a la anterior entrega, se tuvo que cambiar el fichero .config, pasando de catalog.config a icestorm.config, de donde
 el código obtiene  el TopicManager.
 3. Además de esto, para que el run_service funcionase se hizo lo siguiente:
-  - En el setuo.cfg sólo se dejó la línea del catálogo.
-  - Se tuvo que crear a mano el fichero setup.py.
-  - En el fichero iceflix/cli.py tuvimos que adaptar el método catalog_service para que este lanzara catalog.py
-  - Después de esto en el directorio raíz se hizo pip install -e .
+    - En el setuo.cfg sólo se dejó la línea del catálogo.
+    - Se tuvo que crear a mano el fichero setup.py.
+    - En el fichero iceflix/cli.py tuvimos que adaptar el método catalog_service para que este lanzara catalog.py
+    - Después de esto en el directorio raíz se hizo pip install -e .
 4. Hay que destacar la existencia de dos archivos de persistencia donde se guardarán el idMedia junto con su nombre ("mediaName.json") y los tags que cada usuario asigne a las diferentes medias ("mediaTags.json"). Estos dos archivos son leidos al arrancar el servicio para que las busquedas se hagan accediendo a memoria sin necesidad de leer cada vez 
 que se necesite.
 5. Cabe mencionar la existencia de los siguientes fichero:
- - Fichero "file.py" dentro de /iceflix el cuál fue usado durante la primera entrega como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
- - Fichero "client.py" dentro de /iceflix el cuál fue usado durante la primera entrega como una pequeña implementación para probar métodos con el addTags, removeTags, etc.
- - Fichero "authenticator.py" dentro de /iceflix el cuál fue usado durante la primera estrega como pequeña iplementación para probar la comunicación entre servicios.
- - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento del announce usando IceStorm.
+    - Fichero "file.py" dentro de /iceflix el cuál fue usado durante la primera entrega como una  pequeña implementación del FileService para probar las invocaciones newMedia y removeMedia.
+    - Fichero "client.py" dentro de /iceflix el cuál fue usado durante la primera entrega como una pequeña implementación para probar métodos con el addTags, removeTags, etc.
+    - Fichero "authenticator.py" dentro de /iceflix el cuál fue usado durante la primera estrega como pequeña iplementación para probar la comunicación entre servicios.
+    - Fichero "principal.py" dentro de /iceflix el cuál fue usado como una pequeña implementación del servicio principal para probar el funcionamiento del announce usando IceStorm.
 
 En cuanto a las librerias utilizadas: 
-  - Las necesarias para utilizar Ice (Ice, IceFlix).
-  - La necesaria para usar IceStorm (IceStorm).
-  - La librería estándar sys.
-  - La librería para poder abrir hilos (threading)-
-  - La librería os para poder cerrar el programa desde un hilo, ya que sys.exit no funcionaba correctamente. 
-  - La librería random, usada para seleccionar servicios aleatorios.
-  - La librería json para la persistencia.
+    - Las necesarias para utilizar Ice (Ice, IceFlix).
+    - La necesaria para usar IceStorm (IceStorm).
+    - La librería estándar sys.
+    - La librería para poder abrir hilos (threading)-
+    - La librería os para poder cerrar el programa desde un hilo, ya que sys.exit no funcionaba correctamente. 
+    - La librería random, usada para seleccionar servicios aleatorios.
+    - La librería json para la persistencia.
 # EJECUCIÓN SERVICIO CATÁLOGO
 Para realizar la ejecución del servicio del catálogo haremos lo siguiente:
 
