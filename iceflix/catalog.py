@@ -2,16 +2,11 @@
 # -*- coding: utf-8 -*-
 
 #pylint: disable=C0103
-# snake_case naming style
 #pylint: disable=C0303
-# trailling whitespace, aun tratandolo no conseguía eliminarlos, aún así
-# pienso que es mas agradable conforme lo tengo a como te recomienda pylint
 #pylint: disable=C0301
-# line to long, en prints y en creación de hilos.
 #pylint: disable=W0613
-# este nos dice que el argumento Current no lo usamos, pero, si se quita da fallo.
 #pylint: disable=E1101
-# module IceStom has no TopicManagerPrx/NoSuchTopic member
+
 import sys
 import threading
 import os
